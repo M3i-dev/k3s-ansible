@@ -51,6 +51,8 @@ metal_lb_controller_tag_version: "v0.13.5"
 metal_lb_mode: L2
 
 # metallb ip range for load balancer
+# Note the range should be in the same subnet as nodes if metal_lb_mode=L2
+# if metal_lb_mode=BGP then the range should be in a separate dedicated bgp subnet
 metal_lb_ip_range: "192.168.30.80-192.168.30.90"
 
 # metallb bgp settings (only set if metal_lb_mode=BGP)
