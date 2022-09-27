@@ -79,7 +79,7 @@
   until: this.rc == 0
   retries: 5
 
-- name: Test metallb-system resources
+- name: Test metallb-system L2 resources
   command: >-
     k3s kubectl -n metallb-system get {{ item }}
   changed_when: false
@@ -87,7 +87,25 @@
   with_items:
     - IPAddressPool
     - L2Advertisement
+  when: metal_lb_mode == 'L2'
 
+- name: Test metallb-system BGP resources
+  command: >-
+    k3s kubectl -n metallb-system get {{ item }}
+  changed_when: false
+  run_once: true
+  with_items:
+    - IPAddressPool
+    - BGPAdvertisement
+    - BGPPeer
+  when: metal_lb_mode == 'BGP'
+
+- name: Join Rancher management cluster
+  command: >-
+    k3s kubectl apply -f {{ rancher_cluster_join_url }}
+  changed_when: false
+  when: (rancher_cluster_join_url is defined) and (ansible_hostname == hostvars[groups['master'][0]]['ansible_hostname'])
+  
 - name: Remove tmp directory used for manifests
   file:
     path: /tmp/k3s
